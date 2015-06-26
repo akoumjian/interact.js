@@ -5851,21 +5851,26 @@
 
     /* global exports: true, module, define */
 
-    // http://documentcloud.github.io/underscore/docs/underscore.html#section-11
-    if (typeof exports !== 'undefined') {
-        if (typeof module !== 'undefined' && module.exports) {
-            exports = module.exports = interact;
-        }
-        exports.interact = interact;
-    }
-    // AMD
-    else if (typeof define === 'function' && define.amd) {
-        define('interact', function() {
-            return interact;
-        });
-    }
-    else {
-        realWindow.interact = interact;
-    }
+    // https://github.com/umdjs/umd/blob/master/returnExports.js
+    (function (root, factory) {
+        if (typeof define === 'function' && define.amd) {
+            // AMD. Register as an anonymous module.
+            define([], factory);
+        } else if (typeof exports === 'object') {
+            // Node. Does not work with strict CommonJS, but
+            // only CommonJS-like environments that support module.exports,
+            // like Node.
+            module.exports = factory();
+        } else {
+            // Browser globals (root is window)
+            realWindow.returnExports = factory();
+      }
+    }(this, function () {
+
+        // Just return a value to define the module export.
+        // This example returns an object, but the module
+        // can return a function as the exported value.
+        return interact;
+    }));
 
 } (typeof window === 'undefined'? undefined : window));
